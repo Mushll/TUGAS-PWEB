@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Masuk / Daftar</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root { --ink:#16213e; --teal:#0f766e; --mint:#99f6e4; --paper:#f8fafc; }
+    body { font-family:'Inter',system-ui,sans-serif; background:var(--paper); color:var(--ink); }
+    h1,h2,h3 { font-family:'Sora',system-ui,sans-serif; }
+    .split { min-height:100vh; }
+    .brand-panel { background:linear-gradient(160deg,var(--ink) 0%,#0b3b45 100%); color:#fff; }
+    .brand-panel .lead { color:#cbd5e1; max-width:26rem; }
+    .brand-panel .tag { color:var(--mint); }
+    .form-wrap { width:100%; max-width:24rem; }
+    .nav-pills .nav-link { color:var(--ink); font-weight:500; }
+    .nav-pills .nav-link.active { background:var(--teal); }
+    .btn-brand { background:var(--teal); border-color:var(--teal); color:#fff; }
+    .btn-brand:hover, .btn-brand:focus { background:#0b5f58; border-color:#0b5f58; color:#fff; }
+    .form-control:focus { border-color:var(--teal); box-shadow:0 0 0 .2rem rgba(15,118,110,.2); }
+    a { color:var(--teal); }
+  </style>
+</head>
+<body>
+  <main class="container-fluid">
+    <div class="row split">
+
+      <!-- Panel kiri: hanya tampil di layar md ke atas -->
+      <section class="col-md-5 col-lg-6 brand-panel d-none d-md-flex flex-column justify-content-center p-5">
+        <p class="tag fw-semibold mb-2">Praktikum Pemrograman Web</p>
+        <h1 class="display-5 fw-bold mb-3">Mulai dari satu akun.</h1>
+        <p class="lead">Masuk untuk melanjutkan tugasmu, atau daftar kalau kamu baru pertama kali di sini.</p>
+      </section>
+
+      <!-- Panel kanan: form -->
+      <section class="col-12 col-md-7 col-lg-6 d-flex align-items-center justify-content-center p-4">
+        <div class="form-wrap">
+          <h2 class="h3 fw-bold mb-4 d-md-none">Masuk atau daftar</h2>
+
+          <ul class="nav nav-pills nav-fill mb-4" id="authTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="login-tab" data-bs-toggle="pill" data-bs-target="#login" type="button" role="tab" aria-controls="login" aria-selected="true">Masuk</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="register-tab" data-bs-toggle="pill" data-bs-target="#register" type="button" role="tab" aria-controls="register" aria-selected="false">Daftar</button>
+            </li>
+          </ul>
+
+          <div class="tab-content">
+
+            <!-- LOGIN -->
+            <div class="tab-pane fade show active" id="login" role="tabpanel" aria-labelledby="login-tab">
+              <form class="needs-validation" novalidate>
+                <div class="mb-3">
+                  <label for="loginEmail" class="form-label">Email</label>
+                  <input type="email" class="form-control" id="loginEmail" placeholder="nama@email.com" required>
+                  <div class="invalid-feedback">Isi email dengan format yang benar.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="loginPass" class="form-label">Kata sandi</label>
+                  <input type="password" class="form-control" id="loginPass" required>
+                  <div class="invalid-feedback">Kata sandi wajib diisi.</div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="remember">
+                    <label class="form-check-label" for="remember">Ingat saya</label>
+                  </div>
+                  <a href="#" class="small">Lupa kata sandi?</a>
+                </div>
+                <button type="submit" class="btn btn-brand w-100 py-2">Masuk</button>
+              </form>
+            </div>
+
+            <!-- REGISTER -->
+            <div class="tab-pane fade" id="register" role="tabpanel" aria-labelledby="register-tab">
+              <form class="needs-validation" novalidate id="registerForm">
+                <div class="mb-3">
+                  <label for="regName" class="form-label">Nama lengkap</label>
+                  <input type="text" class="form-control" id="regName" required>
+                  <div class="invalid-feedback">Nama wajib diisi.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="regEmail" class="form-label">Email</label>
+                  <input type="email" class="form-control" id="regEmail" placeholder="nama@email.com" required>
+                  <div class="invalid-feedback">Isi email dengan format yang benar.</div>
+                </div>
+                <div class="row g-3 mb-3">
+                  <div class="col-sm-6">
+                    <label for="regPass" class="form-label">Kata sandi</label>
+                    <input type="password" class="form-control" id="regPass" minlength="8" required>
+                    <div class="invalid-feedback">Minimal 8 karakter.</div>
+                  </div>
+                  <div class="col-sm-6">
+                    <label for="regPass2" class="form-label">Ulangi sandi</label>
+                    <input type="password" class="form-control" id="regPass2" required>
+                    <div class="invalid-feedback">Sandi tidak sama.</div>
+                  </div>
+                </div>
+                <div class="form-check mb-4">
+                  <input class="form-check-input" type="checkbox" id="agree" required>
+                  <label class="form-check-label" for="agree">Saya setuju dengan syarat dan ketentuan</label>
+                  <div class="invalid-feedback">Centang dulu untuk melanjutkan.</div>
+                </div>
+                <button type="submit" class="btn btn-brand w-100 py-2">Buat akun</button>
+              </form>
+            </div>
+
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Validasi form Bootstrap + cek kecocokan kata sandi
+    document.querySelectorAll('.needs-validation').forEach(function (form) {
+      form.addEventListener('submit', function (e) {
+        var p1 = document.getElementById('regPass');
+        var p2 = document.getElementById('regPass2');
+        if (form.id === 'registerForm') {
+          p2.setCustomValidity(p1.value === p2.value ? '' : 'Sandi tidak sama');
+        }
+        if (!form.checkValidity()) {
+          e.preventDefault();
+          e.stopPropagation();
+        } else {
+          e.preventDefault();
+          alert('Berhasil! (demo, belum terhubung ke server)');
+        }
+        form.classList.add('was-validated');
+      });
+    });
+  </script>
+</body>
+</html>
