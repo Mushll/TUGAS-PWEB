@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pencarian Kode Pos Indonesia</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="shell wide">
+    <a class="back" href="../">&larr; Kembali ke menu</a>
+    <h1>Pencarian Kode Pos Indonesia</h1>
+    <p class="lead">Pilih provinsi, kabupaten/kota, lalu kecamatan untuk melihat kode pos beserta daftar kelurahan/desanya.</p>
+
+    <form id="searchForm" class="card" novalidate>
+      <div class="selects">
+        <div>
+          <label for="province">Provinsi</label>
+          <select id="province" required><option value="">Memuat provinsi...</option></select>
+        </div>
+        <div>
+          <label for="regency">Kabupaten/Kota</label>
+          <select id="regency" disabled required><option value="">Pilih kabupaten/kota</option></select>
+        </div>
+        <div>
+          <label for="district">Kecamatan</label>
+          <select id="district" disabled required><option value="">Pilih kecamatan</option></select>
+        </div>
+      </div>
+      <button type="submit" id="searchButton" disabled>Cari kode pos</button>
+    </form>
+
+    <p id="status" class="status" role="status" aria-live="polite"></p>
+    <button type="button" id="retryButton" class="retry" hidden>Coba lagi</button>
+
+    <section id="results" class="card results" hidden>
+      <h2>Hasil pencarian</h2>
+      <div class="highlight">
+        <span class="highlight-label" id="postalLabel">Kode pos</span>
+        <span class="highlight-value" id="postalValue"></span>
+      </div>
+      <dl class="info" id="areaInfo"></dl>
+      <div class="table-wrapper">
+        <table>
+          <thead><tr><th>No</th><th>Kelurahan/Desa</th><th>Kode pos</th></tr></thead>
+          <tbody id="resultBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <p class="source">Sumber data: Kode-Pos-API oleh bachors (Firebase). Data pihak ketiga, dapat berbeda dari data resmi PT Pos Indonesia.</p>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
