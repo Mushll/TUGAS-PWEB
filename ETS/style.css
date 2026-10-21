@@ -75,9 +75,13 @@ h1, h2, h3, h4, .lr-brand, .mc-title, .mc-name, .stat strong {
 }
 
 /* Tentang */
-.lr-about { padding: 3.5rem 0 1rem; }
-.lr-about h2 { font-size: clamp(1.7rem, 3vw, 2.2rem); font-weight: 700; color: var(--ink); margin: 0; }
+
+.lr-about { padding: 4rem 0 3rem; }
+.lr-about h2 { font-size: clamp(1.7rem, 3vw, 2.2rem); font-weight: 700; color: var(--ink); margin-bottom: 1rem; }
 .lr-about p { color: var(--muted); max-width: 62ch; margin: 0; }
+
+/* Section */
+.lr-section { padding: 5rem 0 4rem; }
 
 /* Section */
 .lr-section { padding: 4rem 0; }
