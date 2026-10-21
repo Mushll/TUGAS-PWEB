@@ -1,0 +1,112 @@
+:root {
+  --ink: #0f3532;
+  --ink-deep: #0a2523;
+  --brass: #d1a043;
+  --brass-dark: #b88a2e;
+  --mist: #eef3f1;
+  --paper: #fbfcfb;
+  --text: #1c2b2a;
+  --muted: #566866;
+}
+
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+
+body {
+  font-family: "Source Sans 3", system-ui, sans-serif;
+  color: var(--text);
+  background: var(--paper);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, .lr-brand, .mc-title, .mc-name, .stat strong {
+  font-family: "Bricolage Grotesque", system-ui, sans-serif;
+}
+
+:focus-visible { outline: 3px solid var(--brass); outline-offset: 2px; }
+
+/* Buttons */
+.btn-brass { background: var(--brass); color: var(--ink-deep); border: 0; font-weight: 600; }
+.btn-brass:hover, .btn-brass:focus { background: var(--brass-dark); color: var(--ink-deep); }
+
+/* Navbar */
+.lr-nav { background: var(--ink-deep); }
+.lr-brand { color: #fff; font-weight: 700; font-size: 1.25rem; display: inline-flex; align-items: center; gap: .6rem; text-decoration: none; }
+.lr-brand:hover { color: #fff; }
+.lr-logo {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--brass); color: var(--ink-deep);
+  display: inline-grid; place-items: center; font-weight: 700;
+}
+.lr-nav .nav-link { color: rgba(255,255,255,.78); padding: .5rem .85rem; }
+.lr-nav .nav-link:hover { color: #fff; }
+.lr-nav .nav-link.active { color: #fff; box-shadow: inset 0 -2px 0 var(--brass); }
+.lr-nav .navbar-toggler { border-color: rgba(255,255,255,.4); }
+.lr-nav .navbar-toggler-icon { filter: invert(1); }
+
+/* Hero */
+.lr-hero { background: var(--ink); color: #fff; padding: 5rem 0 6rem; overflow: hidden; }
+.lr-hero h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); line-height: 1.1; font-weight: 700; margin-bottom: 1.25rem; max-width: 14ch; }
+.lr-hero .lead { color: rgba(255,255,255,.85); max-width: 52ch; margin-bottom: 2rem; }
+
+/* Kartu anggota */
+.member-card {
+  max-width: 360px; margin-inline: auto;
+  aspect-ratio: 1.586;
+  background: linear-gradient(135deg, #f7f2e6 0%, #efe6cf 100%);
+  color: var(--ink-deep);
+  border-radius: 16px;
+  padding: 1.4rem 1.5rem;
+  display: flex; flex-direction: column;
+  transform: rotate(-4deg);
+  box-shadow: 0 24px 50px rgba(0,0,0,.35);
+  border-top: 8px solid var(--brass);
+}
+.mc-top { display: flex; justify-content: space-between; align-items: center; }
+.mc-title { font-weight: 600; font-size: 1rem; }
+.mc-logo { width: 28px; height: 28px; border-radius: 7px; background: var(--ink); color: var(--brass); display: grid; place-items: center; font-weight: 700; font-family: "Bricolage Grotesque", sans-serif; }
+.mc-name { margin-top: auto; font-size: 1.45rem; font-weight: 700; line-height: 1.2; }
+.mc-meta { font-size: .9rem; color: #4a5a58; margin-bottom: .8rem; }
+.mc-bars {
+  height: 28px;
+  background: repeating-linear-gradient(90deg, var(--ink-deep) 0 2px, transparent 2px 5px, var(--ink-deep) 5px 6px, transparent 6px 10px);
+  opacity: .85;
+}
+
+/* Section */
+.lr-section { padding: 4.5rem 0; }
+.lr-section h2 { font-size: clamp(1.7rem, 3vw, 2.2rem); font-weight: 700; margin-bottom: .4rem; }
+.section-sub { color: var(--muted); margin-bottom: 2.25rem; }
+
+.lr-card {
+  background: var(--mist);
+  border-radius: 14px;
+  padding: 1.75rem;
+  border-top: 4px solid var(--ink);
+}
+.lr-card h3 { font-size: 1.35rem; font-weight: 700; margin-bottom: 1rem; }
+.lr-card ul { margin: 0; padding-left: 1.1rem; color: var(--muted); }
+.lr-card li { margin-bottom: .45rem; }
+
+/* Statistik */
+.lr-stats { background: var(--mist); padding: 3.5rem 0 2.5rem; }
+.stat { border-left: 4px solid var(--brass); padding-left: 1rem; display: inline-block; }
+.stat strong { display: block; font-size: 2.4rem; line-height: 1.1; color: var(--ink); }
+.stat span { color: var(--muted); }
+.stat-note { margin: 1.75rem 0 0; font-size: .85rem; color: var(--muted); }
+
+/* Footer */
+.lr-footer { background: var(--ink-deep); color: rgba(255,255,255,.8); padding: 3.5rem 0 1.5rem; }
+.lr-footer .lr-brand { font-size: 1.15rem; }
+.lr-footer h4 { color: #fff; font-size: 1.05rem; margin-bottom: .75rem; }
+.lr-footer p { margin-bottom: .25rem; }
+.lr-footer .copy { margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid rgba(255,255,255,.15); font-size: .85rem; color: rgba(255,255,255,.6); }
+
+@media (max-width: 767.98px) {
+  .lr-hero { padding: 3.5rem 0 4rem; }
+  .member-card { transform: rotate(-2deg); max-width: 320px; }
+  .stat { display: block; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
