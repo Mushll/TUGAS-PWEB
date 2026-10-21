@@ -14,21 +14,23 @@
 <body>
 
   <!-- Navbar -->
-  <nav class="navbar navbar-expand-md lr-nav sticky-top">
+  <nav class="navbar navbar-expand-lg lr-nav sticky-top">
     <div class="container">
-      <a class="navbar-brand lr-brand" href="index.html">
-        <span class="lr-logo" aria-hidden="true">L</span>LibraryReg
+      <a class="navbar-brand lr-brand" href="index.html" aria-label="LibraryReg - beranda">
+        <img src="img/logo.png" alt="" class="lr-logo-img" width="96" height="36">
+        <span>LibraryReg</span>
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu" aria-controls="menu" aria-expanded="false" aria-label="Buka menu">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="menu">
-        <ul class="navbar-nav ms-auto align-items-md-center gap-md-1">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
           <li class="nav-item"><a class="nav-link active" aria-current="page" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#tentang">Tentang</a></li>
           <li class="nav-item"><a class="nav-link" href="#layanan">Layanan</a></li>
           <li class="nav-item"><a class="nav-link" href="daftar.html">Pendaftaran</a></li>
           <li class="nav-item"><a class="nav-link" href="anggota.html">Data Anggota</a></li>
-          <li class="nav-item ms-md-2"><a class="btn btn-brass btn-sm px-3" href="login.html">Login</a></li>
+          <li class="nav-item ms-lg-2"><a class="btn btn-ink btn-sm px-3" href="login.html">Login</a></li>
         </ul>
       </div>
     </div>
@@ -39,29 +41,43 @@
     <header class="lr-hero">
       <div class="container">
         <div class="row align-items-center gy-5">
-          <div class="col-lg-7">
+          <div class="col-lg-6">
             <h1>Selamat datang di LibraryReg</h1>
-            <p class="lead">Daftar jadi anggota perpustakaan kampus lewat formulir online. Tidak perlu antre, tidak perlu isi kertas, dan datamu langsung tercatat rapi.</p>
+            <p class="lead">Dartar jadi lebih mudah tanpa bisa dimana dan kapan aja lewat formulir.</p>
             <div class="d-flex flex-wrap gap-2">
               <a href="daftar.html" class="btn btn-brass btn-lg px-4">Ayo daftar</a>
-              <a href="#layanan" class="btn btn-outline-light btn-lg px-4">Lihat layanan</a>
+              <a href="#koleksi" class="btn btn-outline-ink btn-lg px-4">Lihat koleksi</a>
             </div>
           </div>
-          <div class="col-lg-5">
-            <!-- Kartu anggota (ilustrasi) -->
-            <div class="member-card" role="img" aria-label="Contoh kartu anggota perpustakaan">
-              <div class="mc-top">
-                <span class="mc-title">Kartu Anggota</span>
-                <span class="mc-logo" aria-hidden="true">L</span>
+          <div class="col-lg-6">
+            <div class="hero-visual">
+              <img src="img/perpustakaan.jpg" alt="Ruang baca perpustakaan dengan rak kayu dan kursi bulat berwarna biru" class="hero-photo" width="640" height="465">
+              <div class="member-card" role="img" aria-label="Contoh kartu anggota perpustakaan">
+                <div class="mc-top">
+                  <span class="mc-title">Kartu Anggota</span>
+                  <img src="img/logo.png" alt="" class="mc-logo" width="48" height="18">
+                </div>
+                <div class="mc-name">Nama Anggota</div>
+                <div class="mc-meta">NIM 21010001 &middot; Mahasiswa</div>
+                <div class="mc-bars" aria-hidden="true"></div>
               </div>
-              <div class="mc-name">Nama Anggota</div>
-              <div class="mc-meta">NIM 21010001 &middot; Mahasiswa</div>
-              <div class="mc-bars" aria-hidden="true"></div>
             </div>
           </div>
         </div>
       </div>
     </header>
+
+    <!-- Tentang -->
+    <section class="lr-about" id="tentang">
+      <div class="container">
+        <div class="row g-4 align-items-start">
+          <div class="col-lg-5"><h2>Tentang perpustakaan</h2></div>
+          <div class="col-lg-7">
+            <p>Perpustakaan kampus menyediakan buku, jurnal, dan ruang belajar untuk mahasiswa, dosen, dan tenaga kependidikan. LibraryReg memindahkan pendaftaran anggota dari formulir kertas ke web, sehingga prosesnya lebih cepat dan datanya lebih mudah dicari petugas.</p>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- Layanan, Fasilitas, Koleksi -->
     <section class="lr-section" id="layanan">
@@ -69,7 +85,7 @@
         <h2>Apa yang bisa kamu dapatkan</h2>
         <p class="section-sub">Tiga hal utama yang disediakan perpustakaan untuk anggotanya.</p>
         <div class="row g-4">
-          <div class="col-md-4" id="layanan-info">
+          <div class="col-md-4">
             <article class="lr-card h-100">
               <h3>Layanan</h3>
               <ul>
@@ -114,7 +130,7 @@
           <div class="col-md-4"><div class="stat"><strong>3.200</strong><span>anggota terdaftar</span></div></div>
           <div class="col-md-4"><div class="stat"><strong>6 hari</strong><span>layanan setiap minggu</span></div></div>
         </div>
-        <p class="stat-note">Angka di atas hanya contoh ilustrasi.</p>
+      
       </div>
     </section>
   </main>
@@ -124,7 +140,10 @@
     <div class="container">
       <div class="row gy-4">
         <div class="col-md-5">
-          <div class="lr-brand mb-2"><span class="lr-logo" aria-hidden="true">L</span>LibraryReg</div>
+          <div class="lr-brand mb-2">
+            <img src="img/logo.png" alt="" class="lr-logo-img" width="96" height="36">
+            <span>LibraryReg</span>
+          </div>
           <p>Aplikasi pendaftaran anggota perpustakaan perguruan tinggi.</p>
         </div>
         <div class="col-md-4">
