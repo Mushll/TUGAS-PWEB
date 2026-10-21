@@ -1,223 +1,213 @@
-const API_URL = "https://kodepos-2d475.firebaseio.com";
-const TIMEOUT_MS = 15000;
+// Data contoh. Dalam aplikasi sungguhan data ini datang dari database/API.
+const students = [
+  { name: "Andi Pratama", nim: "5025241001" },
+  { name: "Anisa Putri", nim: "5025241002" },
+  { name: "Ananda Rizky", nim: "5025241003" },
+  { name: "Aulia Rahma", nim: "5025241004" },
+  { name: "Budi Santoso", nim: "5025241005" },
+  { name: "Bagas Wicaksono", nim: "5025241006" },
+  { name: "Citra Maharani", nim: "5025241007" },
+  { name: "Dewi Lestari", nim: "5025241008" },
+  { name: "Dimas Aditya", nim: "5025241009" },
+  { name: "Eka Saputra", nim: "5025241010" },
+  { name: "Fajar Nugroho", nim: "5025241011" },
+  { name: "Fitri Handayani", nim: "5025241012" },
+  { name: "Gilang Ramadhan", nim: "5025241013" },
+  { name: "Hana Salsabila", nim: "5025241014" },
+  { name: "Indra Kurniawan", nim: "5025241015" },
+  { name: "Mushallina Dzikri Rozana", nim: "5025241016" },
+  { name: "Nadia Azzahra", nim: "5025241017" },
+  { name: "Rizky Firmansyah", nim: "5025241018" },
+  { name: "Salsa Maharani", nim: "5025241019" },
+  { name: "Yoga Prasetyo", nim: "5025241020" }
+];
 
-const provinceSelect = document.getElementById("province");
-const regencySelect = document.getElementById("regency");
-const districtSelect = document.getElementById("district");
-const searchForm = document.getElementById("searchForm");
-const searchButton = document.getElementById("searchButton");
-const statusText = document.getElementById("status");
-const retryButton = document.getElementById("retryButton");
-const results = document.getElementById("results");
-const resultBody = document.getElementById("resultBody");
-const areaInfo = document.getElementById("areaInfo");
-const postalValue = document.getElementById("postalValue");
-const postalLabel = document.getElementById("postalLabel");
+const courses = [
+  { name: "Pemrograman Web", lecturer: "Dr. Fajar Baskoro" },
+  { name: "Jaringan Komputer", lecturer: "Ir. Rahmat Hidayat, M.T." },
+  { name: "Basis Data", lecturer: "Dr. Siti Aminah" },
+  { name: "Struktur Data", lecturer: "Prof. Agus Wijaya" },
+  { name: "Rekayasa Perangkat Lunak", lecturer: "Dr. Lina Marlina" },
+  { name: "Pemrograman Berorientasi Objek", lecturer: "Budi Hartono, M.Kom." },
+  { name: "Sistem Operasi", lecturer: "Ir. Dedi Kurniawan, M.T." },
+  { name: "Kecerdasan Buatan", lecturer: "Dr. Maya Anggraini" }
+];
 
-// Cache supaya data kabupaten/kota yang sama tidak diunduh dua kali.
-const cache = new Map();
-let lastAction = null;
-let requestId = 0; // mencegah respons lama menimpa pilihan yang sudah berganti
+const form = document.getElementById("registrationForm");
+const fields = {
+  name: document.getElementById("name"),
+  nim: document.getElementById("nim"),
+  course: document.getElementById("course"),
+  lecturer: document.getElementById("lecturer")
+};
+const result = document.getElementById("result");
 
-async function getData(path) {
-  if (cache.has(path)) return cache.get(path);
-
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
-  try {
-    const response = await fetch(API_URL + path, { signal: controller.signal });
-    if (!response.ok) throw new Error("Server mengembalikan status " + response.status + ".");
-    const data = await response.json();
-    if (data === null) throw new Error("Data tidak ditemukan.");
-    cache.set(path, data);
-    return data;
-  } catch (error) {
-    if (error.name === "AbortError") throw new Error("Permintaan terlalu lama. Periksa koneksi internet.");
-    throw error;
-  } finally {
-    clearTimeout(timer);
-  }
+function escapeHtml(text) {
+  return text.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
-function setStatus(message, isError = false, retry = null) {
-  statusText.textContent = message;
-  statusText.classList.toggle("error", isError);
-  lastAction = retry;
-  retryButton.hidden = !retry;
+// Tandai huruf yang diketik pengguna di dalam teks rekomendasi.
+function highlight(text, keyword) {
+  const index = text.toLowerCase().indexOf(keyword);
+  if (index === -1) return escapeHtml(text);
+  return (
+    escapeHtml(text.slice(0, index)) +
+    "<mark>" + escapeHtml(text.slice(index, index + keyword.length)) + "</mark>" +
+    escapeHtml(text.slice(index + keyword.length))
+  );
 }
 
-function fillSelect(select, entries, placeholder) {
-  select.innerHTML = "";
-  const first = document.createElement("option");
-  first.value = "";
-  first.textContent = placeholder;
-  select.appendChild(first);
-  entries.forEach(([value, label]) => {
-    const option = document.createElement("option");
-    option.value = value;
-    option.textContent = label;
-    select.appendChild(option);
+// Rekomendasi: nama yang diawali keyword tampil lebih dulu,
+// lalu nama yang mengandung keyword di bagian lain (mis. nama belakang).
+function search(list, keyword) {
+  const startsWith = [];
+  const contains = [];
+  list.forEach((item) => {
+    const lower = item.name.toLowerCase();
+    if (lower.startsWith(keyword)) startsWith.push(item);
+    else if (lower.includes(keyword)) contains.push(item);
   });
-  select.disabled = false;
+  return startsWith.concat(contains).slice(0, 6);
 }
 
-function resetSelect(select, placeholder) {
-  select.innerHTML = "";
-  const option = document.createElement("option");
-  option.value = "";
-  option.textContent = placeholder;
-  select.appendChild(option);
-  select.disabled = true;
-}
+// Satu fungsi autocomplete dipakai untuk kolom nama dan mata kuliah.
+function setupAutocomplete({ input, listEl, source, detail, onSelect }) {
+  let items = [];
+  let active = -1;
 
-function clearResults() {
-  results.hidden = true;
-  resultBody.innerHTML = "";
-  areaInfo.innerHTML = "";
-  postalValue.textContent = "";
-}
-
-function selectedText(select) {
-  return select.selectedOptions[0] ? select.selectedOptions[0].textContent : "";
-}
-
-function byName(a, b) {
-  return a[1].localeCompare(b[1], "id");
-}
-
-// Data per kabupaten/kota berupa array {kecamatan, kelurahan, kodepos}.
-// Daftar kecamatan diturunkan dari array itu.
-function rowsOf(data) {
-  return (Array.isArray(data) ? data : Object.values(data)).filter(Boolean);
-}
-
-async function loadProvinces() {
-  setStatus("Memuat data provinsi...");
-  try {
-    const data = await getData("/list_propinsi.json");
-    fillSelect(provinceSelect, Object.entries(data).sort(byName), "Pilih provinsi");
-    setStatus("Silakan pilih provinsi.");
-  } catch (error) {
-    resetSelect(provinceSelect, "Data gagal dimuat");
-    setStatus("Data provinsi gagal dimuat: " + error.message, true, loadProvinces);
+  function close() {
+    listEl.hidden = true;
+    input.setAttribute("aria-expanded", "false");
+    input.removeAttribute("aria-activedescendant");
+    active = -1;
   }
+
+  function setActive(index) {
+    active = index;
+    listEl.querySelectorAll(".ac-item").forEach((el, i) => {
+      el.setAttribute("aria-selected", String(i === active));
+      if (i === active) {
+        input.setAttribute("aria-activedescendant", el.id);
+        el.scrollIntoView({ block: "nearest" });
+      }
+    });
+  }
+
+  function choose(item) {
+    input.value = item.name;
+    onSelect(item);
+    close();
+  }
+
+  function render() {
+    const keyword = input.value.trim().toLowerCase();
+    listEl.innerHTML = "";
+    if (!keyword) { close(); return; }
+
+    items = search(source, keyword);
+
+    if (items.length === 0) {
+      const empty = document.createElement("li");
+      empty.className = "ac-empty";
+      empty.textContent = "Tidak ada rekomendasi. Kamu tetap bisa mengetik manual.";
+      listEl.appendChild(empty);
+    }
+
+    items.forEach((item, i) => {
+      const li = document.createElement("li");
+      li.className = "ac-item";
+      li.id = listEl.id + "-" + i;
+      li.setAttribute("role", "option");
+      li.setAttribute("aria-selected", "false");
+      li.innerHTML = "<span>" + highlight(item.name, keyword) + "</span><small>" + escapeHtml(detail(item)) + "</small>";
+      // mousedown dipakai supaya terjadi sebelum input kehilangan fokus (blur)
+      li.addEventListener("mousedown", (e) => { e.preventDefault(); choose(item); });
+      listEl.appendChild(li);
+    });
+
+    listEl.hidden = false;
+    input.setAttribute("aria-expanded", "true");
+    active = -1;
+  }
+
+  input.addEventListener("input", render);
+  input.addEventListener("focus", render);
+  input.addEventListener("blur", close);
+  input.addEventListener("keydown", (e) => {
+    if (listEl.hidden || items.length === 0) return;
+    if (e.key === "ArrowDown") { e.preventDefault(); setActive((active + 1) % items.length); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); setActive((active - 1 + items.length) % items.length); }
+    else if (e.key === "Enter" && active >= 0) { e.preventDefault(); choose(items[active]); }
+    else if (e.key === "Escape") { close(); }
+  });
 }
 
-provinceSelect.addEventListener("change", async () => {
-  const id = ++requestId;
-  resetSelect(regencySelect, "Pilih kabupaten/kota");
-  resetSelect(districtSelect, "Pilih kecamatan");
-  searchButton.disabled = true;
-  clearResults();
-
-  if (!provinceSelect.value) { setStatus("Silakan pilih provinsi."); return; }
-
-  const load = async () => {
-    setStatus("Memuat kabupaten/kota...");
-    try {
-      const data = await getData("/list_kotakab/" + provinceSelect.value + ".json");
-      if (id !== requestId) return;
-      fillSelect(regencySelect, Object.entries(data).sort(byName), "Pilih kabupaten/kota");
-      setStatus("Silakan pilih kabupaten/kota.");
-    } catch (error) {
-      if (id !== requestId) return;
-      setStatus("Kabupaten/kota gagal dimuat: " + error.message, true, load);
-    }
-  };
-  load();
+setupAutocomplete({
+  input: fields.name,
+  listEl: document.getElementById("nameList"),
+  source: students,
+  detail: (s) => s.nim,
+  onSelect: (s) => { fields.nim.value = s.nim; clearError("nim"); clearError("name"); }
 });
 
-regencySelect.addEventListener("change", async () => {
-  const id = ++requestId;
-  resetSelect(districtSelect, "Pilih kecamatan");
-  searchButton.disabled = true;
-  clearResults();
-
-  if (!regencySelect.value) { setStatus("Silakan pilih kabupaten/kota."); return; }
-
-  const load = async () => {
-    setStatus("Memuat kecamatan...");
-    try {
-      const rows = rowsOf(await getData("/kota_kab/" + regencySelect.value + ".json"));
-      if (id !== requestId) return;
-      const districts = [...new Set(rows.map((r) => r.kecamatan))]
-        .filter(Boolean)
-        .map((name) => [name, name])
-        .sort(byName);
-      fillSelect(districtSelect, districts, "Pilih kecamatan");
-      setStatus("Silakan pilih kecamatan.");
-    } catch (error) {
-      if (id !== requestId) return;
-      setStatus("Kecamatan gagal dimuat: " + error.message, true, load);
-    }
-  };
-  load();
+setupAutocomplete({
+  input: fields.course,
+  listEl: document.getElementById("courseList"),
+  source: courses,
+  detail: (c) => c.lecturer,
+  onSelect: (c) => { fields.lecturer.value = c.lecturer; clearError("lecturer"); clearError("course"); }
 });
 
-districtSelect.addEventListener("change", () => {
-  clearResults();
-  searchButton.disabled = !districtSelect.value;
-  setStatus(districtSelect.value ? "Klik Cari kode pos untuk melihat hasil." : "Silakan pilih kecamatan.");
-});
+function showError(key, message) {
+  document.getElementById(key + "Error").textContent = message;
+  fields[key].classList.add("invalid");
+  fields[key].setAttribute("aria-invalid", "true");
+}
 
-searchForm.addEventListener("submit", async (event) => {
+function clearError(key) {
+  document.getElementById(key + "Error").textContent = "";
+  fields[key].classList.remove("invalid");
+  fields[key].removeAttribute("aria-invalid");
+}
+
+Object.keys(fields).forEach((key) => fields[key].addEventListener("input", () => clearError(key)));
+
+function validate() {
+  const values = {};
+  Object.keys(fields).forEach((key) => { values[key] = fields[key].value.trim(); clearError(key); });
+
+  let firstInvalid = null;
+  function fail(key, message) {
+    showError(key, message);
+    if (!firstInvalid) firstInvalid = fields[key];
+  }
+
+  if (!values.name) fail("name", "Nama mahasiswa wajib diisi.");
+  else if (!/^[A-Za-z .'-]{3,}$/.test(values.name)) fail("name", "Nama hanya boleh berisi huruf dan minimal 3 karakter.");
+
+  if (!values.nim) fail("nim", "NIM wajib diisi.");
+  else if (!/^\d{5,12}$/.test(values.nim)) fail("nim", "NIM harus berupa angka, 5 sampai 12 digit.");
+
+  if (!values.course) fail("course", "Mata kuliah wajib diisi.");
+  if (!values.lecturer) fail("lecturer", "Dosen wajib diisi.");
+
+  if (firstInvalid) { firstInvalid.focus(); return null; }
+  return values;
+}
+
+form.addEventListener("submit", (event) => {
   event.preventDefault();
-  if (!provinceSelect.value || !regencySelect.value || !districtSelect.value) {
-    setStatus("Pilih provinsi, kabupaten/kota, dan kecamatan terlebih dahulu.", true);
-    return;
-  }
+  const values = validate();
+  if (!values) { result.hidden = true; return; }
 
-  clearResults();
-  searchButton.disabled = true;
-  setStatus("Mencari kode pos...");
-
-  try {
-    const rows = rowsOf(await getData("/kota_kab/" + regencySelect.value + ".json"));
-    const villages = rows
-      .filter((r) => r.kecamatan === districtSelect.value)
-      .sort((a, b) => a.kelurahan.localeCompare(b.kelurahan, "id"));
-
-    if (villages.length === 0) {
-      setStatus("Tidak ada data kelurahan/desa untuk kecamatan ini.", true);
-      return;
-    }
-
-    const codes = [...new Set(villages.map((v) => v.kodepos))].sort();
-    postalLabel.textContent = codes.length === 1 ? "Kode pos" : "Kode pos (" + codes.length + " kode)";
-    postalValue.textContent = codes.join(", ");
-
-    [
-      ["Provinsi", selectedText(provinceSelect)],
-      ["Kabupaten/Kota", selectedText(regencySelect)],
-      ["Kecamatan", districtSelect.value],
-      ["Jumlah kelurahan/desa", String(villages.length)]
-    ].forEach(([label, value]) => {
-      const dt = document.createElement("dt");
-      const dd = document.createElement("dd");
-      dt.textContent = label;
-      dd.textContent = value;
-      areaInfo.append(dt, dd);
-    });
-
-    villages.forEach((village, i) => {
-      const row = document.createElement("tr");
-      [String(i + 1), village.kelurahan, village.kodepos || "-"].forEach((text) => {
-        const cell = document.createElement("td");
-        cell.textContent = text;
-        row.appendChild(cell);
-      });
-      resultBody.appendChild(row);
-    });
-
-    results.hidden = false;
-    setStatus("Ditemukan " + villages.length + " kelurahan/desa.");
-  } catch (error) {
-    setStatus("Pencarian gagal: " + error.message, true);
-  } finally {
-    searchButton.disabled = !districtSelect.value;
-  }
+  result.innerHTML =
+    "<h2>Pendaftaran berhasil dicatat</h2>" +
+    "<dl>" +
+    "<dt>Nama</dt><dd>" + escapeHtml(values.name) + "</dd>" +
+    "<dt>NIM</dt><dd>" + escapeHtml(values.nim) + "</dd>" +
+    "<dt>Mata kuliah</dt><dd>" + escapeHtml(values.course) + "</dd>" +
+    "<dt>Dosen</dt><dd>" + escapeHtml(values.lecturer) + "</dd>" +
+    "</dl>";
+  result.hidden = false;
+  result.scrollIntoView({ behavior: "smooth", block: "nearest" });
 });
-
-retryButton.addEventListener("click", () => { if (lastAction) lastAction(); });
-
-loadProvinces();
